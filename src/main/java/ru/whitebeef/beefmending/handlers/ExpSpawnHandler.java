@@ -37,10 +37,9 @@ public class ExpSpawnHandler implements Listener {
     private void collectExperience(ExperienceOrb experienceOrb) {
         Location location = experienceOrb.getLocation();
         Stream<? extends Entity> entitiesStream = StreamUtils.contact(
-                        location.getNearbyEntitiesByType(ArmorStand.class, 3).stream(),
+                        location.getNearbyEntitiesByType(LivingEntity.class, 3).stream(),
                         location.getNearbyEntitiesByType(Item.class, 3).stream(),
-                        location.getNearbyEntitiesByType(ItemFrame.class, 3).stream(),
-                        location.getNearbyEntitiesByType(Fox.class, 3).stream())
+                        location.getNearbyEntitiesByType(ItemFrame.class, 3).stream())
                 .sorted(Comparator.comparingDouble(o -> o.getLocation().distanceSquared(location)));
 
         entitiesStream.forEach(entity -> {
@@ -51,11 +50,17 @@ public class ExpSpawnHandler implements Listener {
                 experienceOrb.remove();
                 return;
             }
-            if (entity instanceof ArmorStand armorStand) {
+            if (entity instanceof LivingEntity livingEntity) {
                 Arrays.stream(EquipmentSlot.values()).forEach(equipmentSlot -> {
-                    ItemStack itemStack = armorStand.getEquipment().getItem(equipmentSlot);
+                    if (livingEntity.getEquipment() == null) {
+                        return;
+                    }
+                    if (livingEntity instanceof Player) {
+                        return;
+                    }
+                    ItemStack itemStack = livingEntity.getEquipment().getItem(equipmentSlot);
                     if (mendingItemNaturally(itemStack, experienceOrb)) {
-                        armorStand.setItem(equipmentSlot, itemStack);
+                        livingEntity.getEquipment().setItem(equipmentSlot, itemStack);
                     }
                 });
                 return;
@@ -71,13 +76,6 @@ public class ExpSpawnHandler implements Listener {
                 ItemStack itemStack = item.getItemStack();
                 mendingItemNaturally(itemStack, experienceOrb);
                 item.setItemStack(itemStack);
-                return;
-            }
-            if (entity instanceof Fox fox) {
-                ItemStack itemStack = fox.getEquipment().getItemInMainHand();
-                if (mendingItemNaturally(itemStack, experienceOrb)) {
-                    fox.getEquipment().setItemInMainHand(itemStack);
-                }
                 return;
             }
         });
