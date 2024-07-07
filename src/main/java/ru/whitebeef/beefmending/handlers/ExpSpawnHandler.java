@@ -20,7 +20,9 @@ import java.util.stream.Stream;
 public class ExpSpawnHandler implements Listener {
 
     public ExpSpawnHandler() {
-        ScheduleUtils.scheduleSyncRepeatingTask(BeefMending.getInstance(), () -> Bukkit.getWorlds().forEach(world -> world.getEntitiesByClass(ExperienceOrb.class).forEach(this::collectExperience)), 20L, 20L);
+        ScheduleUtils.scheduleSyncRepeatingTask(BeefMending.getInstance(), () ->
+                Bukkit.getWorlds().forEach(world -> world.getEntitiesByClass(ExperienceOrb.class)
+                        .forEach(this::collectExperience)), 20L, 20L);
     }
 
     @EventHandler
@@ -33,7 +35,12 @@ public class ExpSpawnHandler implements Listener {
 
     private void collectExperience(ExperienceOrb experienceOrb) {
         Location location = experienceOrb.getLocation();
-        Stream<Entity> entitiesStream = Stream.concat(Stream.concat(location.getNearbyEntitiesByType(ArmorStand.class, 3).stream(), location.getNearbyEntitiesByType(Item.class, 3).stream()), location.getNearbyEntitiesByType(ItemFrame.class, 3).stream()).sorted(Comparator.comparingDouble(o -> o.getLocation().distanceSquared(location)));
+        Stream<Entity> entitiesStream = Stream.concat(
+                        Stream.concat(
+                                location.getNearbyEntitiesByType(ArmorStand.class, 3).stream(),
+                                location.getNearbyEntitiesByType(Item.class, 3).stream()),
+                        location.getNearbyEntitiesByType(ItemFrame.class, 3).stream())
+                .sorted(Comparator.comparingDouble(o -> o.getLocation().distanceSquared(location)));
 
         entitiesStream.forEach(entity -> {
             if (experienceOrb.isDead()) {
