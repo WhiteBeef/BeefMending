@@ -83,6 +83,9 @@ public class ExpSpawnHandler implements Listener {
                 return false;
             }
             int toAdd = Math.min(damageable.getDamage(), experienceOrb.getExperience());
+            if (toAdd == 0) {
+                return false;
+            }
             damageable.setDamage(Math.max(damageable.getDamage() - toAdd * 2, 0));
             experienceOrb.setExperience(experienceOrb.getExperience() - toAdd);
             itemStack.setItemMeta(damageable);
