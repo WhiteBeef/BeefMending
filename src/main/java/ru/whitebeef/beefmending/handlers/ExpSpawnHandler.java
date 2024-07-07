@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import ru.whitebeef.beeflibrary.utils.ScheduleUtils;
 import ru.whitebeef.beefmending.BeefMending;
+import ru.whitebeef.beefmending.utils.StreamUtils;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -35,11 +36,11 @@ public class ExpSpawnHandler implements Listener {
 
     private void collectExperience(ExperienceOrb experienceOrb) {
         Location location = experienceOrb.getLocation();
-        Stream<Entity> entitiesStream = Stream.concat(
-                        Stream.concat(
-                                location.getNearbyEntitiesByType(ArmorStand.class, 3).stream(),
-                                location.getNearbyEntitiesByType(Item.class, 3).stream()),
-                        location.getNearbyEntitiesByType(ItemFrame.class, 3).stream())
+        Stream<? extends Entity> entitiesStream = StreamUtils.contact(
+                        location.getNearbyEntitiesByType(ArmorStand.class, 3).stream(),
+                        location.getNearbyEntitiesByType(Item.class, 3).stream(),
+                        location.getNearbyEntitiesByType(ItemFrame.class, 3).stream(),
+                        location.getNearbyEntitiesByType(Fox.class, 3).stream())
                 .sorted(Comparator.comparingDouble(o -> o.getLocation().distanceSquared(location)));
 
         entitiesStream.forEach(entity -> {
@@ -68,8 +69,14 @@ public class ExpSpawnHandler implements Listener {
             }
             if (entity instanceof Item item) {
                 ItemStack itemStack = item.getItemStack();
+                mendingItemNaturally(itemStack, experienceOrb);
+                item.setItemStack(itemStack);
+                return;
+            }
+            if (entity instanceof Fox fox) {
+                ItemStack itemStack = fox.getEquipment().getItemInMainHand();
                 if (mendingItemNaturally(itemStack, experienceOrb)) {
-                    item.setItemStack(itemStack);
+                    fox.getEquipment().setItemInMainHand(itemStack);
                 }
                 return;
             }
