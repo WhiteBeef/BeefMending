@@ -15,10 +15,16 @@ repositories {
         name = "sonatype"
         url = "https://oss.sonatype.org/content/groups/public/"
     }
+    maven {
+        name "whitebeefRepositoryReleases"
+        url "https://mvn.wbif.ru/releases"
+    }
+
 }
 
 dependencies {
     compileOnly "io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT"
+    implementation "ru.whitebeef:BeefLibrary:2.3.2"
 }
 
 def targetJavaVersion = 21

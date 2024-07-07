@@ -2,3 +2,5 @@ name: BeefMending
 version: '${version}'
 main: ru.whitebeef.beefmending.BeefMending
 api-version: '1.21'
+depend:
+  - BeefLibrary

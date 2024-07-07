@@ -1,17 +1,23 @@
 package ru.whitebeef.beefmending;
 
-import org.bukkit.plugin.java.JavaPlugin;
 
-public final class BeefMending extends JavaPlugin {
+import ru.whitebeef.beeflibrary.BeefLibrary;
+import ru.whitebeef.beeflibrary.plugin.BeefPlugin;
+import ru.whitebeef.beefmending.handlers.ExpSpawnHandler;
 
-    @Override
-    public void onEnable() {
-        // Plugin startup logic
+public final class BeefMending extends BeefPlugin {
 
+    private static BeefMending instance;
+
+    public static BeefMending getInstance() {
+        return instance;
     }
 
     @Override
-    public void onDisable() {
-        // Plugin shutdown logic
+    public void onEnable() {
+        super.onEnable();
+        instance = this;
+
+        BeefLibrary.registerListeners(this, new ExpSpawnHandler());
     }
 }
